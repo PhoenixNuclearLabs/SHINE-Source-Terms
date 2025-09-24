@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 
+# ******************************************************************************
+# Copyright 2025, SHINE Technologies. All rights reserved.
+# ******************************************************************************
+
 import numpy as np
 import openmc
 
