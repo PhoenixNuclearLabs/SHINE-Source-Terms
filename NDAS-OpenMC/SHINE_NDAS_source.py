@@ -5,7 +5,7 @@
 import numpy as np
 import openmc
 
-def get_spatial_distribution(length):
+def get_spatial_distribution(length, diameter):
 
     # Distribution of azimuthal angle (phi) coordinates
     dist_phi = openmc.stats.Uniform(a=0, b=2 * np.pi)
@@ -32,9 +32,9 @@ def get_spatial_distribution(length):
     # In reality, for a 137 cm target chamber with sufficient diameter to avoid beam scraping, the radius is 0.2 cm at
     # the top and 5.132 cm at the bottom. This results in a source-averaged radius of 2.53179 cm. With a target chamber
     # diameter of 4.1783 cm, some of the beam is scraped, and the source-averaged radius decreases to 2.52630 cm.
-    r_max  = 4.1783  # Inner target chamber radius [cm]
-    r_min  = 0.2     # Beam radius at target chamber entrance [cm]
-    div    = 0.036   # Beam divergence [rad]
+    r_max  = diameter / 2  # Inner target chamber radius [cm]
+    r_min  = 0.2           # Beam radius at target chamber entrance [cm]
+    div    = 0.036         # Beam divergence [rad]
     r_vals = r_min + (dist_z_x - dist_z_x[0]) * div
     r_vals = 0.5 * (r_vals[:-1] + r_vals[1:])
     r_vals[r_vals > r_max] = r_max
@@ -122,13 +122,13 @@ def get_energy_distribution():
     dist_energy = openmc.stats.Tabular(x=dist_e_x, p=dist_e_p, interpolation='linear-linear')
     return dist_energy
 
-def get_source(length):
+def get_source(length, diameter, strength):
 
     source          = openmc.IndependentSource()
-    source.space    = get_spatial_distribution(length)
+    source.space    = get_spatial_distribution(length, diameter)
     source.angle    = get_angular_distribution()
     source.energy   = get_energy_distribution()
     source.particle = 'neutron'
-    source.strength = 2.7e13
+    source.strength = strength
 
     return source

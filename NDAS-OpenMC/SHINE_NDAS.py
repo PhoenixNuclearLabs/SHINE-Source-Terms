@@ -41,16 +41,17 @@ def get_materials():
 
     return mat_dict
 
-def get_geometry(mats, length):
+def get_geometry(length, diameter, mats):
 
     half_length  = length / 2
     tally_center = -half_length + 54./137 * length
+    radius       = diameter / 2
 
-    r_stop   = openmc.ZCylinder(r=3.8100)
-    r_vacuum = openmc.ZCylinder(r=4.1783)
-    r_wall_1 = openmc.ZCylinder(r=4.4577)
-    r_water  = openmc.ZCylinder(r=4.5974)
-    r_wall_2 = openmc.ZCylinder(r=4.8260)
+    r_stop   = openmc.ZCylinder(r=3.81)
+    r_vacuum = openmc.ZCylinder(r=radius)
+    r_wall_1 = openmc.ZCylinder(r=radius + 0.2794)
+    r_water  = openmc.ZCylinder(r=radius + 0.4191)
+    r_wall_2 = openmc.ZCylinder(r=radius + 0.6477)
 
     z_stop   = openmc.ZPlane(-half_length)
     z_vacuum = openmc.ZPlane(-half_length - 0.63500)
@@ -59,7 +60,7 @@ def get_geometry(mats, length):
     z_wall_2 = openmc.ZPlane(-half_length - 3.52552)
     zmax     = openmc.ZPlane( half_length)
 
-    r_tally  = openmc.ZCylinder(r=5.08)
+    r_tally  = openmc.ZCylinder(r=radius + 0.9017)
     z0_tally = openmc.ZPlane(tally_center - 2.5)
     z1_tally = openmc.ZPlane(tally_center + 2.5)
 
@@ -142,13 +143,15 @@ def get_settings(source):
 
 def main():
 
-    length = 137.0
+    length   = 137.0
+    diameter = 3.29 * 2.54
+    strength = 2.7e13
 
     mat_dict  = get_materials()
-    geometry  = get_geometry(mat_dict, length)
+    geometry  = get_geometry(length, diameter, mat_dict)
     tallies   = get_tallies(geometry)
     plots     = get_plots(geometry)
-    source    = get_source(length)
+    source    = get_source(length, diameter, strength)
     settings  = get_settings(source)
 
     materials = openmc.Materials(mat_dict.values())
