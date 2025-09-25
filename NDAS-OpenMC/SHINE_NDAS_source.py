@@ -5,13 +5,13 @@
 import numpy as np
 import openmc
 
-def get_spatial_distribution():
+def get_spatial_distribution(length):
 
     # Distribution of azimuthal angle (phi) coordinates
     dist_phi = openmc.stats.Uniform(a=0, b=2 * np.pi)
 
     # Distribution of axial (z) coordinates
-    dist_z_x = np.linspace(-68.5, 68.5, 138)
+    dist_z_x = np.linspace(-length / 2, length / 2, 138)
     dist_z_p = [1.62336e+08, 4.67523e+08, 7.56034e+08, 1.05696e+09, 1.37603e+09, 1.98892e+09, 2.77825e+09, 3.59512e+09, 4.47835e+09, 6.05361e+09,
                 7.91507e+09, 9.83015e+09, 1.22283e+10, 1.54946e+10, 1.88597e+10, 2.26172e+10, 2.75065e+10, 3.25832e+10, 3.80906e+10, 4.46476e+10,
                 5.13845e+10, 5.89295e+10, 6.75831e+10, 7.64219e+10, 8.64403e+10, 9.70474e+10, 1.08082e+11, 1.20196e+11, 1.32546e+11, 1.45893e+11,
@@ -122,10 +122,10 @@ def get_energy_distribution():
     dist_energy = openmc.stats.Tabular(x=dist_e_x, p=dist_e_p, interpolation='linear-linear')
     return dist_energy
 
-def get_source():
+def get_source(length):
 
     source          = openmc.IndependentSource()
-    source.space    = get_spatial_distribution()
+    source.space    = get_spatial_distribution(length)
     source.angle    = get_angular_distribution()
     source.energy   = get_energy_distribution()
     source.particle = 'neutron'

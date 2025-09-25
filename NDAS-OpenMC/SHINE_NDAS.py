@@ -4,6 +4,7 @@
 # Copyright 2025, SHINE Technologies. All rights reserved.
 # ******************************************************************************
 
+import os
 import numpy as np
 import openmc
 
@@ -40,7 +41,10 @@ def get_materials():
 
     return mat_dict
 
-def get_geometry(mats):
+def get_geometry(mats, length):
+
+    half_length  = length / 2
+    tally_center = -half_length + 54./137 * length
 
     r_stop   = openmc.ZCylinder(r=3.8100)
     r_vacuum = openmc.ZCylinder(r=4.1783)
@@ -48,16 +52,16 @@ def get_geometry(mats):
     r_water  = openmc.ZCylinder(r=4.5974)
     r_wall_2 = openmc.ZCylinder(r=4.8260)
 
-    z_stop   = openmc.ZPlane(-68.5)
-    z_vacuum = openmc.ZPlane(-68.5 - 0.63500)
-    z_wall_1 = openmc.ZPlane(-68.5 - 0.95250)
-    z_water  = openmc.ZPlane(-68.5 - 1.18872)
-    z_wall_2 = openmc.ZPlane(-68.5 - 3.52552)
-    zmax     = openmc.ZPlane( 68.5)
+    z_stop   = openmc.ZPlane(-half_length)
+    z_vacuum = openmc.ZPlane(-half_length - 0.63500)
+    z_wall_1 = openmc.ZPlane(-half_length - 0.95250)
+    z_water  = openmc.ZPlane(-half_length - 1.18872)
+    z_wall_2 = openmc.ZPlane(-half_length - 3.52552)
+    zmax     = openmc.ZPlane( half_length)
 
     r_tally  = openmc.ZCylinder(r=5.08)
-    z0_tally = openmc.ZPlane(-17.0)
-    z1_tally = openmc.ZPlane(-12.0)
+    z0_tally = openmc.ZPlane(tally_center - 2.5)
+    z1_tally = openmc.ZPlane(tally_center + 2.5)
 
     r_bound  = openmc.Sphere(r=1000, boundary_type='vacuum')
 
@@ -138,11 +142,13 @@ def get_settings(source):
 
 def main():
 
+    length = 137.0
+
     mat_dict  = get_materials()
-    geometry  = get_geometry(mat_dict)
+    geometry  = get_geometry(mat_dict, length)
     tallies   = get_tallies(geometry)
     plots     = get_plots(geometry)
-    source    = get_source()
+    source    = get_source(length)
     settings  = get_settings(source)
 
     materials = openmc.Materials(mat_dict.values())
