@@ -70,23 +70,38 @@ def main():
     RGB     = np.array(img * 255, dtype=int)
     outline = RGB[:, :, 0] * 65536 + RGB[:, :, 1] * 256 + RGB[:, :, 2]
 
+    # Setup contour lines
+    clevels = [2e8, 5e8, 1e9, 2e9, 5e9, 1e10    , 2e10  ]
+    ccolors = ['w', 'r', 'b', 'g', 'm', 'yellow', 'aqua']
+    def fmt(x):
+        tokens = ('%.0e' % (x)).split('e')
+        base   = int(tokens[0])
+        expon  = int(tokens[1])
+        if base == 1: return r'$10^%u$' % (expon)
+        return r'$%u\times 10^%u$' % (base, expon)
+
     # Plot mesh tally
     for k in range(2):
         if   k == 0: res = res_m; extent = extent_m; label = 'MCNP'
         elif k == 1: res = res_o; extent = extent_o; label = 'OpenMC'
         fig, ax = plt.subplots(1, 1)
-        fig.set_size_inches(9, 7.25)
+        fig.set_size_inches(8, 6.5)
         im = ax.imshow(res, origin='lower', extent=extent, cmap='Spectral_r',
                        norm=mcolors.LogNorm(vmin=1e8, vmax=1e11))
         ax.contour(outline, origin='upper', levels=np.unique(outline),
                    extent=extent, colors='k', linestyles='solid', linewidths=1)
+        CS = ax.contour(res, origin='lower', extent=extent,
+                        levels=clevels, colors=ccolors)
+        ax.clabel(CS, fmt=fmt)
         ax.xaxis.set_major_locator(mticker.MultipleLocator(base=20))
         ax.yaxis.set_major_locator(mticker.MultipleLocator(base=20))
         ax.set_xlabel('x position [cm]')
         ax.set_ylabel('z position [cm]')
         ax.set_title('Neutron flux map for bare SHINE NDAS - %s' % (label))
         cbar = plt.colorbar(im, orientation='vertical')
-        cbar.set_label('Neutron flux [n/$cm^2$-s]')
+        cbar.set_label(r'Neutron flux [n/$\mathregular{cm^2}$-s]')
+        cbar.ax.hlines(clevels, cbar.ax.dataLim.x0, cbar.ax.dataLim.x1,
+                       colors=ccolors)
         plt.tight_layout()
         fname = os.path.join('images', 'flux_map_%s.png' % (label.lower()))
         print('Writing %s' % (fname))
