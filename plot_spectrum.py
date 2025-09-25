@@ -80,7 +80,7 @@ def main():
     ax.legend()
     ax.grid()
     plt.tight_layout()
-    fname = 'energy_spectrum.png'
+    fname = os.path.join('images', 'tally_spectrum.png')
     print('Writing %s' % (fname))
     plt.savefig(fname)
     plt.close()

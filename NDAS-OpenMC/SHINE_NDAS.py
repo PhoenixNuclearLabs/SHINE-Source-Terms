@@ -112,7 +112,7 @@ def get_plots(geom):
     plot_xy.width    = (12, 12)
     plot_xy.pixels   = (800, 800)
     plot_xy.color_by = 'material'
-    plot_xy.filename = 'geometry_xy.png'
+    plot_xy.filename = os.path.join('..', 'images', 'geometry_xy.png')
 
     plot_xz          = openmc.Plot.from_geometry(geom)
     plot_xz.basis    = 'xz'
@@ -120,7 +120,7 @@ def get_plots(geom):
     plot_xz.width    = (200, 200)
     plot_xz.pixels   = (800, 800)
     plot_xz.color_by = 'material'
-    plot_xz.filename = 'geometry_xz.png'
+    plot_xz.filename = os.path.join('..', 'images', 'geometry_xz.png')
 
     plots = openmc.Plots([plot_xy, plot_xz])
 

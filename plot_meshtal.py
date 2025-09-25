@@ -46,7 +46,8 @@ def load_openmc():
     # Get mesh tally data
     slice  = tally.get_slice(scores=['flux'])
     mesh   = tally.find_filter(openmc.MeshFilter).mesh
-    extent = [-mesh.r_grid[-1], mesh.r_grid[-1], mesh.z_grid[ 0], mesh.z_grid[-1]]
+    extent = [-mesh.r_grid[-1], mesh.r_grid[-1],
+               mesh.z_grid[ 0], mesh.z_grid[-1]]
     slice.mean   .shape = (mesh.dimension[2], mesh.dimension[0])
     slice.std_dev.shape = (mesh.dimension[2], mesh.dimension[0])
 
@@ -64,7 +65,7 @@ def main():
     extent_o, res_o = load_openmc()
 
     # Get geometry outline
-    fname   = os.path.join('NDAS-OpenMC', 'geometry_xz.png')
+    fname   = os.path.join('images', 'geometry_xz.png')
     img     = mpimg.imread(fname)
     RGB     = np.array(img * 255, dtype=int)
     outline = RGB[:, :, 0] * 65536 + RGB[:, :, 1] * 256 + RGB[:, :, 2]
@@ -87,7 +88,7 @@ def main():
         cbar = plt.colorbar(im, orientation='vertical')
         cbar.set_label('Neutron flux [n/$cm^2$-s]')
         plt.tight_layout()
-        fname = 'flux_map_%s.png' % (label.lower())
+        fname = os.path.join('images', 'flux_map_%s.png' % (label.lower()))
         print('Writing %s' % (fname))
         plt.savefig(fname)
         plt.close()
